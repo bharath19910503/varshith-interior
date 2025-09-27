@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Varshith Interior Solution</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script async src="https://docs.opencv.org/4.x/opencv.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <h1>Varshith Interior Solution</h1>
+</header>
+
+<div class="container">
+
+  <section>
+    <h2>Interior Design Cost Calculator</h2>
+    <div class="controls">
+      <table id="invoiceTable">
+        <thead>
+          <tr>
+            <th>Sl No</th>
+            <th>Item Name</th>
+            <th>Material Used</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody id="invoiceBody">
+          <tr>
+            <td>1</td>
+            <td><input type="text" value="TV Unit" /></td>
+            <td><input type="text" value="Plywood" /></td>
+            <td><input type="number" value="10000" class="price" /></td>
+          </tr>
+        </tbody>
+      </table>
+      <button onclick="addRow()">Add Item</button>
+      <button onclick="calculateTotal()">Generate Invoice</button>
+      <button onclick="downloadPDF()">Download PDF Invoice</button>
+    </div>
+
+    <div id="totals">
+      <p><strong>Total:</strong> ₹<span id="totalAmount">0</span></p>
+      <p><strong>GST (18%):</strong> ₹<span id="gstAmount">0</span></p>
+      <p><strong>Final Total:</strong> ₹<span id="finalAmount">0</span></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Upload 2D Floor Plan and View 3D Walls</h2>
+    <input type="file" id="imageUpload" accept="image/*" />
+    <canvas id="inputCanvas" style="display:none;"></canvas>
+    <canvas id="threeCanvas"></canvas>
+  </section>
+
+  <section>
+    <h2>Invoice Upload and Edit</h2>
+    <input type="file" accept=".json" onchange="loadInvoice(this)" />
+    <button onclick="downloadInvoice()">Download Updated Invoice</button>
+  </section>
+
+</div>
+
+<footer>
+  <div>No 39 BRN Ashish Layout Anekal - 562106</div>
+  <div>+91 9916511599 & +91 8553608981</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
