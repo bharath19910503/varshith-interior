@@ -1,74 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Varshith Interior Solution — Invoice & 3D Preview</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- jsPDF + AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Three.js + OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+  <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
-
-<header>
-  <h1>Varshith Interior Solution</h1>
-</header>
-
-<main>
-  <div class="invoice-container">
-    <button id="addItemBtn">Add Item</button>
-    
-    <table id="invoiceTable">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Material Used</th>
-          <th>Qty</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Rows will be added dynamically -->
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="3" class="text-right">Total Cost</td>
-          <td id="totalCost">0.00</td>
-        </tr>
-        <tr>
-          <td colspan="3" class="text-right">GST (%)</td>
-          <td><input type="number" id="gstPercent" value="18"></td>
-        </tr>
-        <tr>
-          <td colspan="3" class="text-right">GST Amount</td>
-          <td id="gstAmount">0.00</td>
-        </tr>
-        <tr>
-          <td colspan="3" class="text-right">Final Cost</td>
-          <td id="finalCost">0.00</td>
-        </tr>
-      </tfoot>
-    </table>
-
-    <p class="note">
-      Note: 50% of the quoted amount has to be paid as advance, 30% after completing 50% of work, and remaining 20% at completion.
-    </p>
-
-    <button id="downloadPdfBtn">Download PDF</button>
-
-    <!-- 3D Design Section -->
-    <h2>3D Design Generator</h2>
-    <input type="file" id="upload2D" accept="image/*">
-    <button id="generate3DBtn">Generate 3D Design</button>
-    <div id="progressContainer">
-      <div id="progressBar">0%</div>
-    </div>
-    <div id="preview3D">
-      <p>No 3D design generated yet.</p>
+  <header>
+    <div class="header-left">
+      <img id="logoImg" src="" alt="Logo (upload below)" />
+      <div class="logo-upload">
+        <label class="btn">Upload Logo
+          <input id="logoUpload" type="file" accept="image/*">
+        </label>
+      </div>
     </div>
 
-  </div>
-</main>
+    <div class="header-center">
+      <h1>Varshith Interior Solution</h1>
+      <div class="company-sub">NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi, Anekal - 562106</div>
+    </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="script.js"></script>
+    <div class="header-right">
+      <div>Phone: +91 9916511599</div>
+      <div>Phone: +91 8553608981</div>
+      <div>Email: Varshithinteriorsolutions@gmail.com</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="left-col">
+      <h2>Invoice</h2>
+
+      <div class="invoice-meta">
+        <input id="clientName" placeholder="Client Name">
+        <input id="invoiceNumber" placeholder="Invoice Number">
+        <input id="invoiceDate" type="date">
+      </div>
+
+      <div class="controls">
+        <button id="addRowBtn">Add Item</button>
+        <button id="clearRowsBtn">Clear All</button>
+        <label>GST % <input id="gstPercent" type="number" value="18" min="0" step="0.1"></label>
+      </div>
+
+      <div class="table-wrap">
+        <table id="invoiceTable" class="invoice-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Material Used</th>
+              <th>Qty</th>
+              <th>Amount</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- rows inserted dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="summary">
+        <div>Total Cost: <span id="totalCost">0.00</span></div>
+        <div>GST: <span id="gstAmount">0.00</span></div>
+        <div class="final">Final Cost: <span id="finalCost">0.00</span></div>
+      </div>
+
+      <textarea id="note" rows="3">Note: 50% of the quoted amount has to be paid as advance, 30% after completing 50% of work and remaining 20% on completion.</textarea>
+
+      <div class="actions">
+        <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
+        <button id="exportJsonBtn">Export Invoice (JSON)</button>
+        <input id="importJsonFile" type="file" accept=".json" style="display:none"/>
+        <button id="importJsonBtn">Import Invoice (JSON)</button>
+      </div>
+    </section>
+
+    <section class="right-col">
+      <h2>2D → 3D Designer</h2>
+
+      <div class="uploader">
+        <input id="upload2D" type="file" accept="image/*">
+        <button id="generate3DBtn">Generate 3D Preview</button>
+      </div>
+
+      <div id="progressContainer" class="progress-container" aria-hidden="true">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div id="preview3D" class="preview-3d"></div>
+      <div class="preview-note">Upload a 2D image; it will be mapped onto a plane for quick preview (rotate/zoom with mouse).</div>
+    </section>
+  </main>
+
+  <footer>
+    <div>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
+    <div>Phone: +91 9916511599 &amp; +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com</div>
+    <div class="copyright">© 2025 Varshith Interior Solution</div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
