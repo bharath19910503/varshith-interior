@@ -1,112 +1,111 @@
-// Add Item Row
-document.getElementById('addItem').addEventListener('click', () => {
-    let tbody = document.getElementById('invoiceBody');
-    let row = tbody.insertRow();
-    for (let i = 0; i < 4; i++) {
-        let cell = row.insertCell();
-        cell.contentEditable = true;
-        cell.innerText = i === 0 ? "New Item" : i === 1 ? "Material" : i === 2 ? "1" : "0";
-    }
-});
+// ===== Invoice Logic =====
+const addItemBtn = document.getElementById('addItemBtn');
+const invoiceTableBody = document.querySelector('#invoiceTable tbody');
+const gstPercentInput = document.getElementById('gstPercent');
+const totalCostTd = document.getElementById('totalCost');
+const gstAmountTd = document.getElementById('gstAmount');
+const finalCostTd = document.getElementById('finalCost');
 
-// Calculate totals
-function calculateTotals() {
-    let tbody = document.getElementById('invoiceBody');
-    let total = 0;
-    for (let row of tbody.rows) {
-        let amount = parseFloat(row.cells[3].innerText) || 0;
-        total += amount;
-    }
-    let gst = total * 0.18;
-    let finalCost = total + gst;
-    document.getElementById('totalCost').innerText = total.toFixed(2);
-    document.getElementById('gst').innerText = gst.toFixed(2);
-    document.getElementById('finalCost').innerText = finalCost.toFixed(2);
+function recalcTotals() {
+  let total = 0;
+  invoiceTableBody.querySelectorAll('tr').forEach(row => {
+    const amount = parseFloat(row.querySelector('.amount').value) || 0;
+    total += amount;
+  });
+  totalCostTd.textContent = total.toFixed(2);
+
+  const gstPercent = parseFloat(gstPercentInput.value) || 0;
+  const gstAmount = total * gstPercent / 100;
+  gstAmountTd.textContent = gstAmount.toFixed(2);
+  finalCostTd.textContent = (total + gstAmount).toFixed(2);
 }
 
-setInterval(calculateTotals, 500);
+function addItemRow() {
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td><input type="text" class="item"></td>
+    <td><input type="text" class="material"></td>
+    <td><input type="number" class="qty" value="1"></td>
+    <td><input type="number" class="amount" value="0"></td>
+  `;
+  invoiceTableBody.appendChild(row);
 
-// Generate PDF
-document.getElementById('generatePDF').addEventListener('click', () => {
-    const { jsPDF } = window.jspdf;
-    let doc = new jsPDF();
-
-    doc.setFontSize(16);
-    doc.text("Varshith Interior Solution", 105, 20, null, null, 'center');
-
-    let data = [];
-    let tbody = document.getElementById('invoiceBody');
-    for (let row of tbody.rows) {
-        data.push([row.cells[0].innerText, row.cells[1].innerText, row.cells[2].innerText, row.cells[3].innerText]);
-    }
-
-    doc.autoTable({
-        head: [['Item', 'Material Used', 'Qty', 'Amount']],
-        body: data,
-        startY: 30,
-        styles: { fillColor: [0, 128, 0], textColor: [255, 255, 255] }
-    });
-
-    doc.text(`Total Cost: ${document.getElementById('totalCost').innerText}`, 14, doc.lastAutoTable.finalY + 10);
-    doc.text(`GST (18%): ${document.getElementById('gst').innerText}`, 14, doc.lastAutoTable.finalY + 20);
-    doc.text(`Final Cost: ${document.getElementById('finalCost').innerText}`, 14, doc.lastAutoTable.finalY + 30);
-
-    doc.save('Invoice.pdf');
-});
-
-// 3D Preview
-document.getElementById('generate3D').addEventListener('click', () => {
-    let fileInput = document.getElementById('designFile');
-    if (!fileInput.files.length) return alert("Select a file first!");
-
-    let file = fileInput.files[0];
-    let reader = new FileReader();
-    let progressBar = document.getElementById('progress');
-    progressBar.style.width = '0%';
-    progressBar.innerText = '0%';
-
-    let progress = 0;
-    let interval = setInterval(() => {
-        progress += 10;
-        progressBar.style.width = progress + '%';
-        progressBar.innerText = progress + '%';
-        if (progress >= 100) clearInterval(interval);
-    }, 200);
-
-    reader.onload = function(e) {
-        load3DPreview(e.target.result);
-    };
-    reader.readAsDataURL(file);
-});
-
-function load3DPreview(imgSrc) {
-    let container = document.getElementById('3dContainer');
-    container.innerHTML = '';
-
-    let scene = new THREE.Scene();
-    let camera = new THREE.PerspectiveCamera(75, 600/400, 0.1, 1000);
-    let renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(600, 400);
-    container.appendChild(renderer.domElement);
-
-    let light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 10, 7.5);
-    scene.add(light);
-
-    let textureLoader = new THREE.TextureLoader();
-    textureLoader.load(imgSrc, (texture) => {
-        let geometry = new THREE.PlaneGeometry(4, 4 * texture.image.height / texture.image.width);
-        let material = new THREE.MeshLambertMaterial({ map: texture });
-        let mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
-
-        camera.position.z = 5;
-
-        function animate() {
-            requestAnimationFrame(animate);
-            mesh.rotation.y += 0.01;
-            renderer.render(scene, camera);
-        }
-        animate();
-    });
+  row.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', recalcTotals);
+  });
 }
+
+addItemBtn.addEventListener('click', addItemRow);
+gstPercentInput.addEventListener('input', recalcTotals);
+
+// ===== PDF Download =====
+const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+
+downloadPdfBtn.addEventListener('click', () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text('Varshith Interior Solution', 14, 22);
+  doc.setFontSize(12);
+  doc.text('Invoice', 14, 32);
+
+  let y = 40;
+  const rows = [];
+  invoiceTableBody.querySelectorAll('tr').forEach((row) => {
+    rows.push([
+      row.querySelector('.item').value,
+      row.querySelector('.material').value,
+      row.querySelector('.qty').value,
+      row.querySelector('.amount').value
+    ]);
+  });
+
+  doc.autoTable({
+    startY: y,
+    head: [['Item', 'Material', 'Qty', 'Amount']],
+    body: rows
+  });
+
+  const finalY = doc.lastAutoTable.finalY + 10;
+  doc.text(`Total Cost: ${totalCostTd.textContent}`, 14, finalY);
+  doc.text(`GST: ${gstAmountTd.textContent}`, 14, finalY + 10);
+  doc.text(`Final Cost: ${finalCostTd.textContent}`, 14, finalY + 20);
+
+  doc.save('Invoice.pdf');
+});
+
+// ===== 3D Design Generation =====
+const upload2D = document.getElementById('upload2D');
+const generate3DBtn = document.getElementById('generate3DBtn');
+const progressBar = document.getElementById('progressBar');
+const preview3D = document.getElementById('preview3D');
+
+generate3DBtn.addEventListener('click', () => {
+  if (!upload2D.files[0]) {
+    alert('Please upload a 2D design first!');
+    return;
+  }
+
+  progressBar.style.width = '0%';
+  progressBar.textContent = '0%';
+  preview3D.innerHTML = '<p>Generating 3D design...</p>';
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += 10; // simulate progress
+    progressBar.style.width = progress + '%';
+    progressBar.textContent = progress + '%';
+
+    if (progress >= 100) {
+      clearInterval(interval);
+
+      // Display generated 3D design (simulate)
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview3D.innerHTML = `<img src="${e.target.result}" alt="3D Design" style="max-width:100%; height:auto;">`;
+      };
+      reader.readAsDataURL(upload2D.files[0]);
+    }
+  }, 300);
+});

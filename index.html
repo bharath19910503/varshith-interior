@@ -1,64 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Varshith Interior Solution</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Varshith Interior Solution</h1>
-    </header>
 
-    <main>
-        <section class="invoice-section">
-            <h2>Invoice Generator</h2>
-            <table id="invoiceTable">
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Material Used</th>
-                        <th>Qty</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody id="invoiceBody">
-                    <tr>
-                        <td contenteditable="true">Sample Item</td>
-                        <td contenteditable="true">Sample Material</td>
-                        <td contenteditable="true">1</td>
-                        <td contenteditable="true">100</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button id="addItem">Add Item</button>
-            <div class="totals">
-                <div>Total Cost: <span id="totalCost">0</span></div>
-                <div>GST (18%): <span id="gst">0</span></div>
-                <div>Final Cost: <span id="finalCost">0</span></div>
-            </div>
-            <button id="generatePDF">Download Invoice PDF</button>
-            <p class="note">Note:- 50% of the quoted amount has to be paid as advance, 30% after 50% work, 20% at completion.</p>
-        </section>
+<header>
+  <h1>Varshith Interior Solution</h1>
+</header>
 
-        <section class="design-section">
-            <h2>2D → 3D Design Generator</h2>
-            <input type="file" id="designFile" accept="image/*">
-            <button id="generate3D">Generate 3D Preview</button>
-            <div class="progress-bar">
-                <div id="progress">0%</div>
-            </div>
-            <div id="3dContainer"></div>
-        </section>
-    </main>
+<main>
+  <div class="invoice-container">
+    <button id="addItemBtn">Add Item</button>
+    
+    <table id="invoiceTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Material Used</th>
+          <th>Qty</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be added dynamically -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="text-right">Total Cost</td>
+          <td id="totalCost">0.00</td>
+        </tr>
+        <tr>
+          <td colspan="3" class="text-right">GST (%)</td>
+          <td><input type="number" id="gstPercent" value="18"></td>
+        </tr>
+        <tr>
+          <td colspan="3" class="text-right">GST Amount</td>
+          <td id="gstAmount">0.00</td>
+        </tr>
+        <tr>
+          <td colspan="3" class="text-right">Final Cost</td>
+          <td id="finalCost">0.00</td>
+        </tr>
+      </tfoot>
+    </table>
 
-    <footer>
-        <p>Varshith Interior Solution © 2025</p>
-    </footer>
+    <p class="note">
+      Note: 50% of the quoted amount has to be paid as advance, 30% after completing 50% of work, and remaining 20% at completion.
+    </p>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r148/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="script.js"></script>
+    <button id="downloadPdfBtn">Download PDF</button>
+
+    <!-- 3D Design Section -->
+    <h2>3D Design Generator</h2>
+    <input type="file" id="upload2D" accept="image/*">
+    <button id="generate3DBtn">Generate 3D Design</button>
+    <div id="progressContainer">
+      <div id="progressBar">0%</div>
+    </div>
+    <div id="preview3D">
+      <p>No 3D design generated yet.</p>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
