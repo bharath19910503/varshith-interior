@@ -3,9 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Varshith Interior Solution — Invoice & 3D Preview</title>
+  <title>Varshith Interior Solutions — Invoice & 3D Preview</title>
 
-  <!-- Styles -->
   <link rel="stylesheet" href="style.css">
 
   <!-- jsPDF + AutoTable -->
@@ -28,7 +27,7 @@
     </div>
 
     <div class="header-center">
-      <h1>Varshith Interior Solution</h1>
+      <h1>Varshith Interior Solutions</h1>
       <div class="company-sub">NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi, Anekal - 562106</div>
     </div>
 
@@ -62,6 +61,7 @@
               <th>Item</th>
               <th>Material Used</th>
               <th>Qty</th>
+              <th>Unit Price</th>
               <th>Amount</th>
               <th></th>
             </tr>
@@ -89,26 +89,30 @@
     </section>
 
     <section class="right-col">
-      <h2>2D → 3D Designer</h2>
+      <h2>2D → 3D Designer (Multiple)</h2>
 
       <div class="uploader">
-        <input id="upload2D" type="file" accept="image/*">
-        <button id="generate3DBtn">Generate 3D Preview</button>
+        <input id="upload2D" type="file" accept="image/*" multiple>
+        <div class="hint">Select multiple images; each will appear below with a name and Generate 3D button.</div>
       </div>
 
-      <div id="progressContainer" class="progress-container" aria-hidden="true">
+      <div id="designList" class="design-list">
+        <!-- uploaded designs render here -->
+      </div>
+
+      <div id="progressContainer" class="progress-container" aria-hidden="true" style="display:none;">
         <div id="progressBar" class="progress-bar"></div>
       </div>
 
       <div id="preview3D" class="preview-3d"></div>
-      <div class="preview-note">Upload a 2D image; it will be mapped onto a plane for quick preview (rotate/zoom with mouse).</div>
+      <div class="preview-note">Click "Generate 3D" for any design to preview and capture a snapshot (embedded into PDF).</div>
     </section>
   </main>
 
   <footer>
     <div>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
     <div>Phone: +91 9916511599 &amp; +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com</div>
-    <div class="copyright">© 2025 Varshith Interior Solution</div>
+    <div class="copyright">© 2025 Varshith Interior Solutions</div>
   </footer>
 
   <script src="script.js"></script>
