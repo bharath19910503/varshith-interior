@@ -18,7 +18,7 @@
 <body>
   <header>
     <div class="header-left">
-      <img id="logoImg" src="" alt="Logo (upload below)" />
+      <img id="logoImg" src="" alt="Logo" />
       <div class="logo-upload">
         <label class="btn">Upload Logo
           <input id="logoUpload" type="file" accept="image/*">
@@ -66,9 +66,7 @@
               <th></th>
             </tr>
           </thead>
-          <tbody>
-            <!-- rows inserted dynamically -->
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
 
@@ -96,11 +94,9 @@
         <div class="hint">Select multiple images; each will appear below with a name and Generate 3D button.</div>
       </div>
 
-      <div id="designList" class="design-list">
-        <!-- uploaded designs render here -->
-      </div>
+      <div id="designList" class="design-list"></div>
 
-      <div id="progressContainer" class="progress-container" aria-hidden="true" style="display:none;">
+      <div id="progressContainer" class="progress-container" style="display:none;">
         <div id="progressBar" class="progress-bar"></div>
       </div>
 
