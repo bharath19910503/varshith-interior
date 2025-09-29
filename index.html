@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Varshith Interior Solutions — Invoice & 3D Preview</title>
-
   <link rel="stylesheet" href="style.css">
 
   <!-- jsPDF + AutoTable -->
@@ -44,18 +43,15 @@
 
       <div class="invoice-meta">
         <input id="clientName" placeholder="Client Name">
+        <input id="clientGST" placeholder="Client GST Number">
         <input id="invoiceNumber" placeholder="Invoice Number">
         <input id="invoiceDate" type="date">
-      </div>
-
-      <div class="invoice-meta">
-        <input id="clientGST" placeholder="Client GST Number">
-        <input id="companyGST" placeholder="Company GST Number">
       </div>
 
       <div class="controls">
         <button id="addRowBtn">Add Item</button>
         <button id="clearRowsBtn">Clear All</button>
+        <label>GST Number <input id="gstNumber" type="text" placeholder="Company GST Number"></label>
       </div>
 
       <div class="table-wrap">
@@ -78,11 +74,10 @@
 
       <div class="summary">
         <div>Total Cost: <span id="totalCost">0.00</span></div>
-        <div>GST: <span id="gstAmount">0.00</span></div>
+        <div>GST Amount: <span id="gstAmount">0.00</span></div>
         <div class="final">Final Cost: <span id="finalCost">0.00</span></div>
+        <div>Amount in Words: <span id="amountInWords"></span></div>
       </div>
-
-      <div class="amount-word">Amount in words: <span id="amountInWords">Zero</span></div>
 
       <div class="actions">
         <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
@@ -102,10 +97,6 @@
 
       <div id="designList" class="design-list">
         <!-- uploaded designs render here -->
-      </div>
-
-      <div id="progressContainer" class="progress-container" aria-hidden="true" style="display:none;">
-        <div id="progressBar" class="progress-bar"></div>
       </div>
 
       <div id="preview3D" class="preview-3d"></div>
