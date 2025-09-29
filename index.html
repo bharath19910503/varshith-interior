@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Varshith Interior Solutions — Invoice & 3D Preview</title>
+
   <link rel="stylesheet" href="style.css">
 
   <!-- jsPDF + AutoTable -->
@@ -43,16 +44,18 @@
 
       <div class="invoice-meta">
         <input id="clientName" placeholder="Client Name">
-        <input id="clientGST" placeholder="Client GST Number">
         <input id="invoiceNumber" placeholder="Invoice Number">
         <input id="invoiceDate" type="date">
-        <input id="companyGST" placeholder="Company GST Number" value="27AAAAA0000A1Z5">
+      </div>
+
+      <div class="invoice-meta">
+        <input id="clientGST" placeholder="Client GST Number">
+        <input id="companyGST" placeholder="Company GST Number">
       </div>
 
       <div class="controls">
         <button id="addRowBtn">Add Item</button>
         <button id="clearRowsBtn">Clear All</button>
-        <label>GST % <input id="gstPercent" type="number" value="18" min="0" step="0.1"></label>
       </div>
 
       <div class="table-wrap">
@@ -68,6 +71,7 @@
             </tr>
           </thead>
           <tbody>
+            <!-- rows inserted dynamically -->
           </tbody>
         </table>
       </div>
@@ -77,6 +81,8 @@
         <div>GST: <span id="gstAmount">0.00</span></div>
         <div class="final">Final Cost: <span id="finalCost">0.00</span></div>
       </div>
+
+      <div class="amount-word">Amount in words: <span id="amountInWords">Zero</span></div>
 
       <div class="actions">
         <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
@@ -94,7 +100,9 @@
         <div class="hint">Select multiple images; each will appear below with a name and Generate 3D button.</div>
       </div>
 
-      <div id="designList" class="design-list"></div>
+      <div id="designList" class="design-list">
+        <!-- uploaded designs render here -->
+      </div>
 
       <div id="progressContainer" class="progress-container" aria-hidden="true" style="display:none;">
         <div id="progressBar" class="progress-bar"></div>
@@ -106,7 +114,7 @@
   </main>
 
   <footer>
-    <div>Address: NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
+    <div>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
     <div>Phone: +91 9916511599 &amp; +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com</div>
     <div class="copyright">© 2025 Varshith Interior Solutions</div>
   </footer>
