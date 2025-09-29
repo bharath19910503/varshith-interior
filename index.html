@@ -38,26 +38,27 @@
 </header>
 
 <main>
-  <!-- Invoice Recovery Section -->
-  <section class="invoice-recovery">
-    <h2>Recover Invoice</h2>
-    <div>
-      <label>Invoice Number: <input id="searchInvoiceNumber" placeholder="Enter Invoice Number"></label>
-      <button id="searchByInvoiceNumber">Search</button>
-    </div>
-    <div>
-      <label>Client Name: <input id="searchClientName" placeholder="Enter Client Name"></label>
-      <button id="searchByClientName">Search</button>
-    </div>
-    <div>
-      <label>Invoice Date: <input id="searchInvoiceDate" type="date"></label>
-      <button id="searchByInvoiceDate">Search</button>
-    </div>
-    <div id="recoveryResults"></div>
-  </section>
-
   <section class="left-col">
     <h2>Invoice</h2>
+
+    <!-- Collapsible Recover Invoice -->
+    <button id="toggleRecover" class="btn">Recover Invoice ▼</button>
+    <div class="invoice-recovery" id="recoverSection" style="display:none;">
+      <h3>Recover Invoice</h3>
+      <div>
+        <label>Invoice Number: <input id="searchInvoiceNumber" placeholder="Enter Invoice Number"></label>
+        <button id="searchByInvoiceNumber">Search</button>
+      </div>
+      <div>
+        <label>Client Name: <input id="searchClientName" placeholder="Enter Client Name"></label>
+        <button id="searchByClientName">Search</button>
+      </div>
+      <div>
+        <label>Invoice Date: <input id="searchInvoiceDate" type="date"></label>
+        <button id="searchByInvoiceDate">Search</button>
+      </div>
+      <div id="recoveryResults"></div>
+    </div>
 
     <div class="invoice-meta">
       <input id="clientName" placeholder="Client Name">
