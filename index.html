@@ -1,139 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Varshith Interior Solutions — Invoice & 3D Preview</title>
-  <link rel="stylesheet" href="style.css">
-
-  <!-- jsPDF + AutoTable -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-
-  <!-- Three.js + OrbitControls -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-  <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-</head>
-<body>
-<header>
-  <div class="header-left">
-    <img id="logoImg" src="" alt="Logo" />
-    <div class="logo-upload">
-      <label class="btn">Upload Logo
-        <input id="logoUpload" type="file" accept="image/*">
-      </label>
-    </div>
-  </div>
-
-  <div class="header-center">
-    <h1>Varshith Interior Solutions</h1>
-    <div class="company-sub">NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi, Anekal - 562106</div>
-  </div>
-
-  <div class="header-right">
-    <div>Phone: +91 9916511599</div>
-    <div>Phone: +91 8553608981</div>
-    <div>Email: Varshithinteriorsolutions@gmail.com</div>
-  </div>
-</header>
-
-<main>
-  <section class="left-col">
-    <h2>Invoice</h2>
-
-    <!-- Collapsible Recover Invoice -->
-    <button id="toggleRecover" class="btn">Recover Invoice ▼</button>
-    <div class="invoice-recovery" id="recoverSection" style="display:none;">
-      <h3>Recover Invoice</h3>
-      <div>
-        <label>Invoice Number: <input id="searchInvoiceNumber" placeholder="Enter Invoice Number"></label>
-        <button id="searchByInvoiceNumber">Search</button>
-      </div>
-      <div>
-        <label>Client Name: <input id="searchClientName" placeholder="Enter Client Name"></label>
-        <button id="searchByClientName">Search</button>
-      </div>
-      <div>
-        <label>Invoice Date: <input id="searchInvoiceDate" type="date"></label>
-        <button id="searchByInvoiceDate">Search</button>
-      </div>
-      <div id="recoveryResults"></div>
-    </div>
-
-    <div class="invoice-meta">
-      <input id="clientName" placeholder="Client Name">
-      <input id="clientGST" placeholder="Client GST Number">
-      <input id="invoiceNumber" placeholder="Invoice Number">
-      <input id="invoiceDate" type="date">
-      <input id="companyGST" placeholder="Company GST Number">
-    </div>
-
-    <div class="controls">
-      <button id="addRowBtn">Add Item</button>
-      <button id="clearRowsBtn">Clear All</button>
-      <label>GST % <input id="gstPercent" type="number" value="18" min="0" step="0.1"></label>
-    </div>
-
-    <div class="table-wrap">
-      <table id="invoiceTable" class="invoice-table">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Material Used</th>
-            <th>Qty</th>
-            <th>Unit Price</th>
-            <th>Amount</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- rows inserted dynamically -->
-        </tbody>
-      </table>
-    </div>
-
-    <div class="summary">
-      <div>Total Cost: <span id="totalCost">0.00</span></div>
-      <div>GST: <span id="gstAmount">0.00</span></div>
-      <div class="final">Final Cost: <span id="finalCost">0.00</span></div>
-      <div>Amount in Words: <span id="amountWords">Zero</span></div>
-    </div>
-
-    <div class="actions">
-      <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
-      <button id="exportJsonBtn">Export Invoice (JSON)</button>
-      <input id="importJsonFile" type="file" accept=".json" style="display:none"/>
-      <button id="importJsonBtn">Import Invoice (JSON)</button>
-    </div>
-  </section>
-
-  <section class="right-col">
-    <h2>2D → 3D Designer</h2>
-
-    <div class="uploader">
-      <input id="upload2D" type="file" accept="image/*" multiple>
-      <div class="hint">Select multiple images; each will appear below with a name and Generate 3D button.</div>
-    </div>
-
-    <div id="designList" class="design-list">
-      <!-- uploaded designs render here -->
-    </div>
-
-    <div id="progressContainer" class="progress-container" aria-hidden="true" style="display:none;">
-      <div id="progressBar" class="progress-bar"></div>
-    </div>
-
-    <div id="preview3D" class="preview-3d"></div>
-    <div class="preview-note">Click "Generate 3D" for any design to preview and capture a snapshot (embedded into PDF).</div>
-  </section>
-</main>
-
-<footer>
-  <div>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
-  <div>Phone: +91 9916511599 &amp; +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com</div>
-  <div class="copyright">© 2025 Varshith Interior Solutions</div>
-</footer>
-
-<script src="script.js"></script>
-</body>
-</html>
+:root{
+  --green: #2e7d32;
+  --muted: #f4f6f5;
+}
+*{box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--muted);color:#222}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--green);color:#fff}
+header .header-left, header .header-center, header .header-right{display:flex;align-items:center}
+header img{width:72px;height:72px;object-fit:contain;background:#fff;padding:4px;border-radius:6px;margin-right:10px}
+header .logo-upload input{display:none}
+header h1{margin:0;font-size:20px}
+header .company-sub{font-size:12px;opacity:.95;margin-top:4px}
+main{display:flex;gap:20px;padding:18px}
+.left-col{flex:1;min-width:380px}
+.right-col{width:520px;max-width:48%}
+.invoice-meta{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.invoice-meta input{padding:8px;border:1px solid #ccc;border-radius:4px;flex:1;min-width:150px}
+.controls{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.controls button, .controls label .btn{background:var(--green);color:#fff;border:none;padding:8px 10px;border-radius:5px;cursor:pointer}
+.table-wrap{overflow:auto;border-radius:6px;background:#fff;padding:6px}
+.invoice-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.invoice-table th, .invoice-table td{border:1px solid #e0e0e0;padding:8px;vertical-align:top;overflow:hidden;text-overflow:ellipsis}
+.invoice-table th{background:var(--green);color:#fff;white-space:nowrap}
+.invoice-table td input{width:100%;border:0;padding:4px;outline:none}
+.invoice-table td .deleteBtn{background:#c62828;color:#fff;border:none;padding:6px 8px;border-radius:4px;cursor:pointer}
+.summary{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.summary div{background:#fff;padding:8px;border-radius:6px;border:1px solid #eee;min-width:150px}
+.summary .final{font-weight:700}
+#amountWords{font-style:italic;color:#555}
+.actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
+.actions .primary{background:#1565c0}
+.progress-container{width:100%;height:14px;background:#e6e6e6;border-radius:8px;overflow:hidden;margin-top:8px}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--green),#66bb6a)}
+.preview-3d{width:100%;height:380px;background:#f0f0f0;border-radius:6px;border:1px solid #ddd;margin-top:10px}
+.preview-note{font-size:12px;color:#555;margin-top:6px}
+.design-list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.design-item{background:#fff;border:1px solid #ddd;padding:8px;border-radius:6px;display:flex;gap:10px;align-items:center}
+.design-thumb{width:80px;height:60px;object-fit:cover;border:1px solid #eee;border-radius:4px}
+.design-info{flex:1;display:flex;flex-direction:column;gap:6px}
+.design-controls{display:flex;gap:6px;align-items:center}
+.design-controls button{background:var(--green);color:#fff;border:none;padding:6px 8px;border-radius:4px;cursor:pointer}
+footer{background:var(--green);color:#fff;padding:10px 18px;text-align:center;margin-top:18px}
+.invoice-recovery{background:#fff;border-radius:6px;padding:10px;margin-top:12px;border:1px solid #ccc;}
+.invoice-recovery input{padding:6px;border:1px solid #ccc;border-radius:4px;margin-right:6px}
+.invoice-recovery button{padding:6px 10px;border:none;border-radius:4px;background:var(--green);color:#fff;cursor:pointer;margin-right:6px}
