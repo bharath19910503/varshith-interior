@@ -1,192 +1,177 @@
-// Utility: format numbers with commas
-function formatNumber(num) {
-  return num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+// script.js
+let invoiceData = JSON.parse(localStorage.getItem('invoices') || '{}');
+const invoiceTable = document.getElementById('invoiceTable').querySelector('tbody');
+const addRowBtn = document.getElementById('addRowBtn');
+const clearRowsBtn = document.getElementById('clearRowsBtn');
+const generatePDFBtn = document.getElementById('generatePDFBtn');
+const clientNameInput = document.getElementById('clientName');
+const clientGSTInput = document.getElementById('clientGST');
+const invoiceNumberInput = document.getElementById('invoiceNumber');
+const invoiceDateInput = document.getElementById('invoiceDate');
+const gstPercentInput = document.getElementById('gstPercent');
+const totalCostEl = document.getElementById('totalCost');
+const gstAmountEl = document.getElementById('gstAmount');
+const finalCostEl = document.getElementById('finalCost');
+const recoverInvoiceBtn = document.getElementById('recoverInvoiceBtn');
+
+function formatAmount(num){
+  return Number(num).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
-// Utility: convert number to words (simple)
-function numberToWords(num) {
-  if (num === 0) return 'zero';
-  const a = ['','one','two','three','four','five','six','seven','eight','nine','ten',
-             'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen',
-             'eighteen','nineteen'];
-  const b = ['', '', 'twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
-
-  function inWords(n) {
-    if (n < 20) return a[n];
-    if (n < 100) return b[Math.floor(n/10)] + (n%10 ? ' ' + a[n%10] : '');
-    if (n < 1000) return a[Math.floor(n/100)] + ' hundred' + (n%100 ? ' ' + inWords(n%100) : '');
-    if (n < 100000) return inWords(Math.floor(n/1000)) + ' thousand' + (n%1000 ? ' ' + inWords(n%1000) : '');
-    return n.toString();
-  }
-
-  let [intPart, decPart] = num.toString().split('.');
-  let words = inWords(parseInt(intPart));
-  if (decPart) {
-    words += ' point';
-    for (let d of decPart) {
-      words += ' ' + a[parseInt(d)];
-    }
-  }
+function amountInWords(num) {
+  const a = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const b = ['', '', 'Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  const numParts = num.toString().split(".");
+  let n = parseInt(numParts[0],10);
+  let words = '';
+  if(n<20){ words = a[n]; } else { words = b[Math.floor(n/10)] + ' ' + a[n%10]; }
+  if(numParts[1]) words += ' point ' + numParts[1].split('').map(x=>a[parseInt(x)]).join(' '); 
   return words;
 }
 
-// Elements
-const tbody = document.querySelector('#invoiceTable tbody');
-const totalCostEl = document.getElementById('totalCost');
-const gstPercentEl = document.getElementById('gstPercent');
-const gstAmountEl = document.getElementById('gstAmount');
-const finalCostEl = document.getElementById('finalCost');
-const amountWordsEl = document.getElementById('amountWords');
-const designUpload = document.getElementById('designUpload');
-const designList = document.getElementById('designList');
+function updateSummary(){
+  let total = 0;
+  invoiceTable.querySelectorAll('tr').forEach(row=>{
+    const amount = parseFloat(row.querySelector('.amount').value || 0);
+    total += amount;
+  });
+  totalCostEl.textContent = formatAmount(total);
+  const gst = total*(parseFloat(gstPercentInput.value)/100);
+  gstAmountEl.textContent = formatAmount(gst);
+  finalCostEl.textContent = formatAmount(total+gst);
+}
 
-let designs = [];
-
-// Add Row
-document.getElementById('addRow').addEventListener('click', () => {
+function addRow(item='', material='', qty=1, price=0){
   const row = document.createElement('tr');
   row.innerHTML = `
-    <td><input type="text" class="item" /></td>
-    <td><input type="text" class="material" /></td>
-    <td><input type="number" class="qty" value="1" min="1" /></td>
-    <td><input type="number" class="rate" value="0" min="0" /></td>
-    <td><input type="text" class="amount" readonly /></td>
+    <td><input class="item" value="${item}"></td>
+    <td><input class="material" value="${material}"></td>
+    <td><input class="qty" type="number" value="${qty}" min="1"></td>
+    <td><input class="price" type="number" value="${price}"></td>
+    <td><input class="amount" value="${formatAmount(qty*price)}" readonly></td>
     <td><button class="deleteBtn">Delete</button></td>
   `;
-  tbody.appendChild(row);
-  updateCalculations();
+  invoiceTable.appendChild(row);
+
+  row.querySelectorAll('input').forEach(input=>{
+    input.addEventListener('input', ()=>{
+      const qty = parseFloat(row.querySelector('.qty').value || 0);
+      const price = parseFloat(row.querySelector('.price').value || 0);
+      row.querySelector('.amount').value = formatAmount(qty*price);
+      updateSummary();
+    });
+  });
+
+  row.querySelector('.deleteBtn').addEventListener('click', ()=>{ row.remove(); updateSummary(); });
+
+  updateSummary();
+}
+
+addRowBtn.addEventListener('click', ()=> addRow());
+clearRowsBtn.addEventListener('click', ()=>{
+  invoiceTable.innerHTML = '';
+  clientNameInput.value='';
+  clientGSTInput.value='';
+  invoiceNumberInput.value='';
+  invoiceDateInput.value='';
+  updateSummary();
 });
 
-// Delete Row
-tbody.addEventListener('click', e => {
-  if (e.target.classList.contains('deleteBtn')) {
-    e.target.closest('tr').remove();
-    updateCalculations();
+recoverInvoiceBtn.addEventListener('click', ()=>{
+  const invNo = invoiceNumberInput.value;
+  if(invNo && invoiceData[invNo]){
+    const data = invoiceData[invNo];
+    clientNameInput.value = data.clientName;
+    clientGSTInput.value = data.clientGST;
+    invoiceDateInput.value = data.invoiceDate;
+    invoiceTable.innerHTML = '';
+    data.items.forEach(item=> addRow(item.item, item.material, item.qty, item.price));
+    gstPercentInput.value = data.gstPercent;
+  } else {
+    alert('Invoice not found');
   }
 });
 
-// Update on qty or rate change
-tbody.addEventListener('input', e => {
-  if (e.target.classList.contains('qty') || e.target.classList.contains('rate')) {
-    updateCalculations();
-  }
-});
+generatePDFBtn.addEventListener('click', ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const headerColor = '#2e7d32';
+  const footerColor = '#2e7d32';
 
-// GST change
-gstPercentEl.addEventListener('input', updateCalculations);
+  // Watermark
+  doc.setTextColor(200,200,200);
+  doc.setFontSize(60);
+  doc.text('Varshith Interior Solutions',105,150,{angle:45,align:'center'});
 
-// Update Calculations
-function updateCalculations() {
-  let total = 0;
-  [...tbody.querySelectorAll('tr')].forEach(row => {
-    const qty = parseFloat(row.querySelector('.qty').value) || 0;
-    const rate = parseFloat(row.querySelector('.rate').value) || 0;
-    const amt = qty * rate;
-    row.querySelector('.amount').value = formatNumber(amt);
-    total += amt;
-  });
-  totalCostEl.textContent = formatNumber(total);
-  const gstP = parseFloat(gstPercentEl.value) || 0;
-  const gstAmt = total * gstP / 100;
-  gstAmountEl.textContent = formatNumber(gstAmt);
-  const final = total + gstAmt;
-  finalCostEl.textContent = formatNumber(final);
-  amountWordsEl.textContent = numberToWords(final);
-}
+  // Header
+  doc.setTextColor(255,255,255);
+  doc.setFillColor(...[46,125,50]);
+  doc.rect(0,0,210,20,'F');
+  doc.text('Varshith Interior Solutions',105,14,{align:'center'});
 
-// Handle design uploads
-designUpload.addEventListener('change', e => {
-  [...e.target.files].forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      designs.push({ name: file.name, src: ev.target.result });
-      renderDesigns();
-    };
-    reader.readAsDataURL(file);
-  });
-});
+  // Footer
+  doc.setFillColor(...[46,125,50]);
+  doc.rect(0,287,210,10,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(10);
+  doc.text(`Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106 | Phone: +91 9916511599 & +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com`,105,293,{align:'center'});
 
-function renderDesigns() {
-  designList.innerHTML = '';
-  designs.forEach((d,i) => {
-    const div = document.createElement('div');
-    div.className = 'design-item';
-    div.innerHTML = `
-      <img src="${d.src}" class="design-thumb" />
-      <input type="text" value="${d.name}" data-idx="${i}" />
-      <button onclick="removeDesign(${i})">Remove</button>
-    `;
-    designList.appendChild(div);
-  });
-}
-function removeDesign(i) {
-  designs.splice(i,1);
-  renderDesigns();
-}
+  // Client Details
+  doc.setTextColor(0,0,0);
+  doc.setFontSize(12);
+  let y = 30;
+  doc.text(`Invoice No: ${invoiceNumberInput.value}`,10,y);
+  doc.text(`Invoice Date: ${invoiceDateInput.value}`,150,y);
+  y+=10;
+  doc.text(`Client Name: ${clientNameInput.value}`,10,y);
+  doc.text(`Client GST No: ${clientGSTInput.value}`,10,y+7);
 
-// Download Invoice (pdfmake)
-document.getElementById('downloadBtn').addEventListener('click', () => {
-  const docDefinition = {
-    watermark: { text: 'Varshith Interior Solutions', color: 'green', opacity: 0.05, bold: true, italics: false, angle: 45 },
-    header: { text: 'Invoice - Varshith Interior Solutions', alignment: 'center', margin: [0,10], color: 'darkgreen' },
-    footer: function(currentPage, pageCount) {
-      return {
-        columns: [
-          { text: 'Address: Bangalore, India', alignment: 'center', color: 'darkgreen' },
-          { text: 'Phone: +91-9876543210 | Email: info@varshithinterior.com', alignment: 'center', color: 'darkgreen' },
-          { text: 'Page ' + currentPage.toString() + ' of ' + pageCount, alignment: 'center', color: 'darkgreen' }
-        ],
-        margin: [10,0]
-      };
-    },
-    content: []
-  };
-
-  // Client & Invoice info
-  docDefinition.content.push({
-    text: `Invoice No: ${document.getElementById('invoiceNumber').value}
-Date: ${document.getElementById('invoiceDate').value}
-Client: ${document.getElementById('clientName').value}
-Client GST: ${document.getElementById('clientGST').value}`,
-    margin: [0,0,0,10]
-  });
-
-  // Table data
-  const body = [['Item','Material','Qty','Rate','Amount']];
-  [...tbody.querySelectorAll('tr')].forEach(row => {
-    body.push([
+  // Table
+  const rows = [];
+  invoiceTable.querySelectorAll('tr').forEach(row=>{
+    rows.push([
       row.querySelector('.item').value,
       row.querySelector('.material').value,
       row.querySelector('.qty').value,
-      row.querySelector('.rate').value,
+      row.querySelector('.price').value,
       row.querySelector('.amount').value
     ]);
   });
-  docDefinition.content.push({ table: { headerRows: 1, widths:['*','*','auto','auto','auto'], body }, margin:[0,0,0,10] });
 
-  // Summary
-  docDefinition.content.push(`Total: ${totalCostEl.textContent}`);
-  docDefinition.content.push(`GST (${gstPercentEl.value}%): ${gstAmountEl.textContent}`);
-  docDefinition.content.push(`Final Cost: ${finalCostEl.textContent}`);
-  docDefinition.content.push(`Amount in Words: ${amountWordsEl.textContent}`);
+  doc.autoTable({
+    head: [['Item','Material Used','Qty','Unit Price','Amount']],
+    body: rows,
+    startY: y+20,
+    theme:'grid'
+  });
 
-  // Designs
-  if (designs.length) {
-    docDefinition.content.push({ text:'2D → 3D Designs', style:'subheader', margin:[0,10,0,5] });
-    designs.forEach(d => {
-      docDefinition.content.push({ image: d.src, width: 200, text: d.name, margin:[0,5,0,10] });
-    });
-  }
+  y = doc.lastAutoTable.finalY+10;
+  doc.text(`Total Cost: ${totalCostEl.textContent}`,10,y);
+  doc.text(`GST: ${gstAmountEl.textContent}`,70,y);
+  doc.text(`Final Cost: ${finalCostEl.textContent}`,120,y);
+  y+=7;
+  doc.text(`Amount in Words: ${amountInWords(parseFloat(finalCostEl.textContent))}`,10,y);
 
-  pdfMake.createPdf(docDefinition).download('invoice.pdf');
-});
+  // 2D → 3D Images
+  const designList = document.querySelectorAll('.design-thumb');
+  let imgY = y+10;
+  designList.forEach((img, index)=>{
+    if(imgY>250){ doc.addPage(); imgY=20; }
+    doc.addImage(img.src,'JPEG',10,imgY,50,30);
+    doc.text(img.alt,65,imgY+15);
+    imgY+=40;
+  });
 
-// Recover tab toggle
-document.getElementById('invoiceTab').addEventListener('click', () => {
-  document.getElementById('invoiceSection').style.display = 'block';
-  document.getElementById('recoverSection').style.display = 'none';
-});
-document.getElementById('recoverTab').addEventListener('click', () => {
-  document.getElementById('invoiceSection').style.display = 'none';
-  document.getElementById('recoverSection').style.display = 'block';
+  doc.save(`Invoice_${invoiceNumberInput.value}.pdf`);
+
+  // Save invoice to localStorage
+  const invNo = invoiceNumberInput.value;
+  invoiceData[invNo] = {
+    clientName: clientNameInput.value,
+    clientGST: clientGSTInput.value,
+    invoiceDate: invoiceDateInput.value,
+    gstPercent: gstPercentInput.value,
+    items: rows.map(r=>({item:r[0],material:r[1],qty:r[2],price:r[3]}))
+  };
+  localStorage.setItem('invoices', JSON.stringify(invoiceData));
 });
