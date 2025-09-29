@@ -47,7 +47,7 @@
         <input id="clientGST" placeholder="Client GST Number">
         <input id="invoiceNumber" placeholder="Invoice Number">
         <input id="invoiceDate" type="date">
-        <input id="ourGST" placeholder="Our GST Number">
+        <input id="companyGST" placeholder="GST Number">
       </div>
 
       <div class="controls">
@@ -68,21 +68,36 @@
               <th></th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+            <!-- rows inserted dynamically -->
+          </tbody>
         </table>
       </div>
 
       <div class="summary">
         <div>Total Cost: <span id="totalCost">0.00</span></div>
-        <div>GST: <span id="gstAmount">0.00</span></div>
+        <div>GST Amount: <span id="gstAmount">0.00</span></div>
         <div class="final">Final Cost: <span id="finalCost">0.00</span></div>
       </div>
+
+      <textarea id="note" rows="3">Payment note: 50 PCT of the quoted amount has to be paid as advance, 30 PCT after completing 50 % of work and remaining 20 PCT after the completion of work.</textarea>
 
       <div class="actions">
         <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
         <button id="exportJsonBtn">Export Invoice (JSON)</button>
         <input id="importJsonFile" type="file" accept=".json" style="display:none"/>
         <button id="importJsonBtn">Import Invoice (JSON)</button>
+      </div>
+
+      <div class="search-section">
+        <h3>Recover Invoices</h3>
+        <input id="searchInvoiceNumber" placeholder="Invoice Number">
+        <button id="searchByInvoice">Search</button>
+        <input id="searchClientName" placeholder="Client Name">
+        <button id="searchByClient">Search</button>
+        <input id="searchDate" type="date">
+        <button id="searchByDate">Search</button>
+        <div id="searchResults"></div>
       </div>
     </section>
 
@@ -91,12 +106,14 @@
 
       <div class="uploader">
         <input id="upload2D" type="file" accept="image/*" multiple>
-        <div class="hint">Select multiple 2D designs; each will appear below with a name and Generate 3D button.</div>
+        <div class="hint">Select multiple images; each will appear below with a name and Generate 3D button.</div>
       </div>
 
-      <div id="designList" class="design-list"></div>
+      <div id="designList" class="design-list">
+        <!-- uploaded designs render here -->
+      </div>
 
-      <div id="progressContainer" class="progress-container" style="display:none;">
+      <div id="progressContainer" class="progress-container" aria-hidden="true" style="display:none;">
         <div id="progressBar" class="progress-bar"></div>
       </div>
 
@@ -106,7 +123,9 @@
   </main>
 
   <footer>
-    <div id="footerInfo">Address, Phone & Email will appear here</div>
+    <div id="footerAddress">Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
+    <div id="footerContact">Phone: +91 9916511599 &amp; +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com | GST: <span id="footerGST"></span></div>
+    <div class="copyright">© 2025 Varshith Interior Solutions</div>
   </footer>
 
   <script src="script.js"></script>
