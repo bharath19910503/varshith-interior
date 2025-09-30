@@ -12,13 +12,10 @@
 <body>
   <header>
     <h1>Varshith Interior Solutions</h1>
-    <nav>
-      <ul>
-        <li><a href="#invoiceTab">Invoice</a></li>
-        <li><a href="#designerTab">2D → 3D Designer</a></li>
-        <li><a href="#recoverTab">Recover Invoice</a></li>
-      </ul>
-    </nav>
+    <label class="logo-preview">
+      <input type="file" id="logoUpload" accept="image/*">
+      <img id="logoImg" class="logo-preview">
+    </label>
   </header>
 
   <main>
@@ -26,8 +23,6 @@
     <section id="invoiceTab">
       <h2>Invoice</h2>
       <div class="form-section">
-        <label>Upload Logo: <input type="file" id="logoUpload" accept="image/*"></label>
-        <img id="logoImg" class="logo-preview">
         <label>Client Name: <input type="text" id="clientName"></label>
         <label>Client GST: <input type="text" id="clientGST"></label>
         <label>Invoice Number: <input type="text" id="invoiceNumber"></label>
@@ -75,7 +70,7 @@
       <label>Date: <input type="date" id="searchInvoiceDate"></label>
       <button id="searchByInvoiceDate">Search</button>
       <button id="clearRecoveryBtn">Clear All</button>
-      <div id="recoveryResults" class="invoice-recovery"></div>
+      <div id="recoveryResults"></div>
     </section>
   </main>
 

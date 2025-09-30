@@ -2,26 +2,52 @@
   --green: #2e7d32;
   --muted: #f4f6f5;
 }
+
 *{box-sizing:border-box}
 body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--muted);color:#222}
+
+/* Header */
 header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--green);color:#fff}
 header h1{margin:0;font-size:20px}
-main{display:flex;flex-direction:column;gap:20px;padding:18px}
-.form-section{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:15px}
-.form-section label{display:flex;flex-direction:column;font-size:14px}
-.logo-preview{width:80px;height:60px;object-fit:contain;margin-top:5px}
-#invoiceTable{width:100%;border-collapse:collapse;background:#fff}
-#invoiceTable th,#invoiceTable td{border:1px solid #ccc;padding:8px;text-align:left}
+header .logo-preview{width:50px;height:50px;object-fit:contain;background:#fff;padding:4px;border-radius:6px}
+
+/* Main Layout */
+main{display:flex;gap:20px;padding:18px;flex-wrap:wrap}
+
+/* Invoice Form */
+#invoiceTab .form-section{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+#invoiceTab label{display:flex;flex-direction:column;font-size:14px}
+#invoiceTab input[type="text"],#invoiceTab input[type="date"],#invoiceTab input[type="number"]{padding:6px;border:1px solid #ccc;border-radius:4px;min-width:150px}
+
+/* Invoice Table */
+#invoiceTable{width:100%;border-collapse:collapse;table-layout:fixed;background:#fff;border-radius:6px;overflow:hidden;margin-bottom:10px}
+#invoiceTable th,#invoiceTable td{border:1px solid #e0e0e0;padding:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #invoiceTable th{background:var(--green);color:#fff}
-#invoiceTable td input{width:100%;border:none;outline:none;padding:4px}
-button{padding:6px 10px;border:none;border-radius:4px;background:var(--green);color:#fff;cursor:pointer;margin-top:5px}
-.totals{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+#invoiceTable td input{width:100%;border:0;padding:4px;outline:none}
+.deleteBtn{background:#c62828;color:#fff;border:none;padding:6px 8px;border-radius:4px;cursor:pointer}
+
+/* Summary & Actions */
+.totals div,.summary div{background:#fff;padding:8px;border-radius:6px;border:1px solid #eee;min-width:150px;margin-bottom:4px}
 #amountWords{font-style:italic;color:#555}
-.design-list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
-.design-item{background:#fff;border:1px solid #ddd;padding:8px;border-radius:6px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.design-thumb{width:80px;height:60px;object-fit:cover;border:1px solid #eee;border-radius:4px}
+.actions button{background:var(--green);color:#fff;border:none;padding:8px 10px;border-radius:5px;cursor:pointer;margin-right:6px}
+
+/* 3D Designer */
+#designerTab{display:flex;flex-direction:column;gap:10px}
+.design-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.design-item{background:#fff;border:1px solid #ddd;padding:8px;border-radius:6px;display:flex;gap:10px;align-items:center}
+.design-thumb{width:100px;height:80px;object-fit:cover;border:1px solid #eee;border-radius:4px}
 .design-info{flex:1;display:flex;flex-direction:column;gap:6px}
 .design-controls{display:flex;gap:6px;align-items:center}
-.preview-3d{width:100%;height:380px;background:#f0f0f0;border-radius:6px;border:1px solid #ddd;margin-top:10px}
-.invoice-recovery{background:#fff;border-radius:6px;padding:10px;margin-top:10px; border:1px solid #ccc;}
+.design-controls button{background:var(--green);color:#fff;border:none;padding:6px 8px;border-radius:4px;cursor:pointer}
+
+/* Preview 3D Canvas */
+.preview-3d{width:100%;height:380px;background:#f0f0f0;border-radius:6px;border:1px solid #ddd;margin-top:10px;overflow:hidden}
+.design-item canvas{border:1px solid #ccc;border-radius:4px;width:200px;height:200px;object-fit:cover}
+
+/* Recovery Section */
+.invoice-recovery{background:#fff;border-radius:6px;padding:10px;margin-top:10px;border:1px solid #ccc;}
+.invoice-recovery input{padding:6px;border:1px solid #ccc;border-radius:4px;margin-right:6px}
+.invoice-recovery button{padding:6px 10px;border:none;border-radius:4px;background:var(--green);color:#fff;cursor:pointer;margin-right:6px}
+
+/* Footer */
 footer{background:var(--green);color:#fff;padding:10px 18px;text-align:center;margin-top:18px}

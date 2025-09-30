@@ -1,18 +1,8 @@
 // Globals
 let invoiceData = JSON.parse(localStorage.getItem("invoiceData") || "{}");
 const invoiceTableBody = document.querySelector("#invoiceTable tbody");
-
-// Logo Upload
-document.getElementById("logoUpload").addEventListener("change", e=>{
-    const file = e.target.files[0];
-    if(file){
-        const reader=new FileReader();
-        reader.onload = function(ev){
-            document.getElementById("logoImg").src=ev.target.result;
-        }
-        reader.readAsDataURL(file);
-    }
-});
+const designList = document.getElementById("designList");
+let renderer, scene, camera, current3DMesh;
 
 // Number to Words
 function numberToWords(amount){
@@ -47,7 +37,7 @@ function addRow(item='', material='', qty=1, price=0){
     recalcInvoice();
 }
 
-// Recalculate Invoice
+// Recalculate
 function recalcInvoice(){
     let total=0;
     invoiceTableBody.querySelectorAll("tr").forEach(tr=>{
@@ -66,19 +56,35 @@ function recalcInvoice(){
     document.getElementById("amountWords").textContent=numberToWords(final);
 }
 
-// Clear
-document.getElementById("clearRowsBtn").addEventListener("click", ()=>{
+// Clear All
+document.getElementById("clearRowsBtn").addEventListener("click", ()=>{ 
     document.getElementById("clientName").value='';
     document.getElementById("invoiceNumber").value='';
     document.getElementById("invoiceDate").value='';
     document.getElementById("clientGST").value='';
     document.getElementById("companyGST").value='';
     invoiceTableBody.innerHTML='';
+    designList.innerHTML='';
     recalcInvoice();
 });
+document.getElementById("clearRecoveryBtn").addEventListener("click", ()=>{
+    document.getElementById("searchInvoiceNumber").value='';
+    document.getElementById("searchClientName").value='';
+    document.getElementById("searchInvoiceDate").value='';
+    document.getElementById("recoveryResults").innerHTML='';
+});
 
-// 2D → 3D Designer
-const designList=document.getElementById("designList");
+// Logo Upload Preview
+document.getElementById("logoUpload").addEventListener("change", e=>{
+    const file=e.target.files[0];
+    if(file){
+        const reader=new FileReader();
+        reader.onload=ev=>document.getElementById("logoImg").src=ev.target.result;
+        reader.readAsDataURL(file);
+    }
+});
+
+// 2D → 3D Upload & Preview
 document.getElementById("upload2D").addEventListener("change", e=>{
     Array.from(e.target.files).forEach(file=>{
         const reader=new FileReader();
@@ -93,7 +99,7 @@ document.getElementById("upload2D").addEventListener("change", e=>{
             <button class="removeDesignBtn">Remove</button>
             </div></div>`;
             div.querySelector(".removeDesignBtn").addEventListener("click",()=>div.remove());
-            div.querySelector(".generate3DBtn").addEventListener("click",()=>render3D(ev.target.result, div));
+            div.querySelector(".generate3DBtn").addEventListener("click",()=>render3D(ev.target.result));
             designList.appendChild(div);
         };
         reader.readAsDataURL(file);
@@ -101,28 +107,26 @@ document.getElementById("upload2D").addEventListener("change", e=>{
 });
 
 // Render 3D
-function render3D(imageSrc, containerDiv){
-    containerDiv.querySelector("canvas")?.remove();
-    const previewDiv=document.createElement("div");
-    containerDiv.appendChild(previewDiv);
-    previewDiv.style.width="100%"; previewDiv.style.height="200px"; previewDiv.style.border="1px solid #ddd"; previewDiv.style.borderRadius="6px";
-    const scene=new THREE.Scene();
-    const camera=new THREE.PerspectiveCamera(45, previewDiv.clientWidth/previewDiv.clientHeight,0.1,1000);
-    const renderer=new THREE.WebGLRenderer({antialias:true});
-    renderer.setSize(previewDiv.clientWidth, previewDiv.clientHeight);
-    previewDiv.appendChild(renderer.domElement);
+function render3D(imageSrc){
+    const container=document.getElementById("preview3D");
+    container.innerHTML='';
+    scene=new THREE.Scene();
+    camera=new THREE.PerspectiveCamera(45,container.clientWidth/container.clientHeight,0.1,1000);
+    renderer=new THREE.WebGLRenderer({antialias:true});
+    renderer.setSize(container.clientWidth,container.clientHeight);
+    container.appendChild(renderer.domElement);
     const controls=new THREE.OrbitControls(camera,renderer.domElement);
     camera.position.z=5;
     const texture=new THREE.TextureLoader().load(imageSrc);
     const geometry=new THREE.BoxGeometry(1,1,1);
     const material=new THREE.MeshBasicMaterial({map:texture});
-    const mesh=new THREE.Mesh(geometry,material);
-    scene.add(mesh);
-    function animate(){requestAnimationFrame(animate); renderer.render(scene,camera);}
+    current3DMesh=new THREE.Mesh(geometry,material);
+    scene.add(current3DMesh);
+    function animate(){requestAnimationFrame(animate);renderer.render(scene,camera);}
     animate();
 }
 
-// Invoice Recovery
+// Recover Invoice
 document.getElementById("searchByInvoiceNumber").addEventListener("click",()=>{
     const num=document.getElementById("searchInvoiceNumber").value;
     if(invoiceData[num]) loadInvoice(invoiceData[num]);
@@ -130,11 +134,13 @@ document.getElementById("searchByInvoiceNumber").addEventListener("click",()=>{
 });
 document.getElementById("searchByClientName").addEventListener("click",()=>{
     const name=document.getElementById("searchClientName").value;
-    displayRecoveryResults(Object.values(invoiceData).filter(inv=>inv.clientName===name));
+    const results=Object.values(invoiceData).filter(inv=>inv.clientName===name);
+    displayRecoveryResults(results);
 });
 document.getElementById("searchByInvoiceDate").addEventListener("click",()=>{
     const date=document.getElementById("searchInvoiceDate").value;
-    displayRecoveryResults(Object.values(invoiceData).filter(inv=>inv.invoiceDate===date));
+    const results=Object.values(invoiceData).filter(inv=>inv.invoiceDate===date);
+    displayRecoveryResults(results);
 });
 function loadInvoice(inv){
     document.getElementById("clientName").value=inv.clientName;
@@ -157,10 +163,10 @@ function displayRecoveryResults(results){
 }
 
 // PDF Generation
-document.getElementById("generatePDFBtn").addEventListener("click", async ()=>{
+document.getElementById("generatePDFBtn").addEventListener("click", ()=>{
     const {jsPDF}=window.jspdf;
     const doc=new jsPDF('p','pt','a4');
-    const pageWidth=595, pageHeight=842, margin=40, footerHeight=50;
+
     const clientName=document.getElementById("clientName").value;
     const invoiceNumber=document.getElementById("invoiceNumber").value;
     const invoiceDate=document.getElementById("invoiceDate").value;
@@ -171,29 +177,15 @@ document.getElementById("generatePDFBtn").addEventListener("click", async ()=>{
     if(!invoiceNumber){alert("Invoice Number required"); return;}
     if(!invoiceData[invoiceNumber]) invoiceData[invoiceNumber]={};
 
-    // Logo header
-    if(logoImg.src){
-        await new Promise(res=>{
-            const img=new Image();
-            img.onload=res;
-            img.src=logoImg.src;
-        });
-        const maxLogoWidth = 60, maxLogoHeight = 50;
-        let logoWidth = logoImg.naturalWidth, logoHeight = logoImg.naturalHeight;
-        const aspectRatio = logoWidth/logoHeight;
-        if(logoWidth > maxLogoWidth){logoWidth=maxLogoWidth; logoHeight=logoWidth/aspectRatio;}
-        if(logoHeight > maxLogoHeight){logoHeight=maxLogoHeight; logoWidth=logoHeight*aspectRatio;}
-        doc.addImage(logoImg.src,'PNG',margin,5,logoWidth,logoHeight);
-    }
+    // Logo
+    if(logoImg.src) doc.addImage(logoImg.src,'PNG',40,20,60,60);
 
-    doc.setFillColor(46,125,50); doc.rect(0,0,pageWidth,50,'F');
-    doc.setFontSize(16); doc.setTextColor(255,255,255);
-    doc.text("Varshith Interior Solutions", margin + 70, 30);
-    doc.setFontSize(10); doc.setTextColor(0,0,0);
-    doc.text(`Client Name: ${clientName}`, 40,70);
-    doc.text(`Client GST: ${clientGST}`, 40,85);
-    doc.text(`Invoice No: ${invoiceNumber}`, 400,70);
-    doc.text(`Date: ${invoiceDate}`, 400,85);
+    // Header
+    doc.setFontSize(16); doc.text("Varshith Interior Solutions", 120, 40);
+    doc.setFontSize(10); doc.text(`Client: ${clientName}`, 40, 100);
+    doc.text(`Client GST: ${clientGST}`, 40, 115);
+    doc.text(`Invoice No: ${invoiceNumber}`, 400, 100);
+    doc.text(`Date: ${invoiceDate}`, 400, 115);
 
     // Table
     const headers=["Item","Material","Qty","Unit Price","Amount"];
@@ -202,59 +194,24 @@ document.getElementById("generatePDFBtn").addEventListener("click", async ()=>{
         const row=[]; tr.querySelectorAll("input").forEach(inp=>row.push(inp.value));
         row.push(tr.children[4].textContent); rows.push(row);
     });
-    doc.autoTable({startY:100,head:[headers],body:rows,theme:'grid'});
+    doc.autoTable({startY:130,head:[headers],body:rows,theme:'grid'});
 
-    // Summary & Payment Note
-    let finalY = doc.lastAutoTable.finalY + 20;
-    const summaryTexts = [
-        `Total Cost: ${document.getElementById("totalCost").textContent}`,
-        `GST Amount: ${document.getElementById("gstAmount").textContent}`,
-        `Final Cost: ${document.getElementById("finalCost").textContent}`,
-        `Amount in Words: ${document.getElementById("amountWords").textContent}`,
-        "Payment Note: 50 PCT of the quoted amount has to be paid as advance, 30 PCT after completing 50% of work and remaining 20 PCT after the completion of work"
-    ];
-    summaryTexts.forEach(text=>{
-        if(finalY+15>pageHeight-footerHeight){addFooter(doc,pageHeight,footerHeight,pageWidth,companyGST,margin); doc.addPage(); finalY=margin;}
-        doc.text(text,margin,finalY); finalY+=15;
-    });
+    const finalY=doc.lastAutoTable.finalY+20;
+    doc.text(`Total Cost: ${document.getElementById("totalCost").textContent}`,40,finalY);
+    doc.text(`GST Amount: ${document.getElementById("gstAmount").textContent}`,40,finalY+15);
+    doc.text(`Final Cost: ${document.getElementById("finalCost").textContent}`,40,finalY+30);
+    doc.text(`Amount in Words: ${document.getElementById("amountWords").textContent}`,40,finalY+45);
+    doc.text("Payment Note: 50% advance, 30% after 50% work, 20% after completion",40,finalY+60);
 
-    // 3D Designs Auto-Fit
-    const designCanvases = document.querySelectorAll(".design-item canvas");
-    const maxImgHeight = 250, maxImgWidth = pageWidth-2*margin;
-    let designsPerPage = Math.floor((pageHeight-finalY-footerHeight)/(maxImgHeight+10));
-    let currentDesignIndex = 0;
-    while(currentDesignIndex < designCanvases.length){
-        let designsThisPage = 0, yPos = finalY;
-        while(designsThisPage<designsPerPage && currentDesignIndex<designCanvases.length){
-            const canvas = designCanvases[currentDesignIndex];
-            const imgData = canvas.toDataURL("image/jpeg",0.6);
-            let imgWidth = maxImgWidth, imgHeight = maxImgHeight;
-            const aspectRatio = canvas.width/canvas.height;
-            if(imgWidth/imgHeight>aspectRatio) imgWidth=imgHeight*aspectRatio;
-            else imgHeight=imgWidth/aspectRatio;
-            if(yPos+imgHeight>pageHeight-footerHeight) break;
-            doc.addImage(imgData,'JPEG',margin,yPos,imgWidth,imgHeight);
-            yPos+=imgHeight+10;
-            currentDesignIndex++; designsThisPage++;
-        }
-        if(currentDesignIndex<designCanvases.length){addFooter(doc,pageHeight,footerHeight,pageWidth,companyGST,margin); doc.addPage(); finalY=margin;}
-        else finalY=yPos;
-    }
+    // 3D Design (first one)
+    const first3D=designList.querySelector("img");
+    if(first3D) doc.addImage(first3D.src,'PNG',40,finalY+80,200,100);
 
     // Footer
-    addFooter(doc,pageHeight,footerHeight,pageWidth,companyGST,margin);
+    doc.setFontSize(10); doc.text(`Company GST: ${companyGST}`,40,770);
     doc.save(`Invoice_${invoiceNumber}.pdf`);
 
-    // Save
+    // Save to localStorage
     invoiceData[invoiceNumber]={clientName,invoiceNumber,invoiceDate,clientGST,companyGST,items:rows};
     localStorage.setItem("invoiceData",JSON.stringify(invoiceData));
 });
-
-// Footer helper
-function addFooter(doc,pageHeight,footerHeight,pageWidth,companyGST,margin){
-    doc.setFillColor(46,125,50); doc.rect(0,pageHeight-footerHeight,pageWidth,footerHeight,'F');
-    doc.setTextColor(255,255,255); doc.setFontSize(10);
-    doc.text(`Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106`,margin,pageHeight-footerHeight+15);
-    doc.text(`Phone: +91 9916511599 & +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com`,margin,pageHeight-footerHeight+30);
-    doc.text(`Company GST: ${companyGST}`,margin,pageHeight-footerHeight+45);
-}
