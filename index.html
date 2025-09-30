@@ -38,9 +38,9 @@
 </header>
 
 <main>
-  <!-- Invoice Section -->
   <section class="left-col">
     <h2>Invoice</h2>
+
     <div class="invoice-meta">
       <input id="clientName" placeholder="Client Name">
       <input id="clientGST" placeholder="Client GST Number">
@@ -84,16 +84,40 @@
       <input id="importJsonFile" type="file" accept=".json" style="display:none"/>
       <button id="importJsonBtn">Import Invoice (JSON)</button>
     </div>
+
+    <section class="invoice-recovery">
+      <h3>Recover Invoice</h3>
+      <div>
+        <label>Invoice Number: <input id="searchInvoiceNumber" placeholder="Enter Invoice Number"></label>
+        <button id="searchByInvoiceNumber">Search</button>
+      </div>
+      <div>
+        <label>Client Name: <input id="searchClientName" placeholder="Enter Client Name"></label>
+        <button id="searchByClientName">Search</button>
+      </div>
+      <div>
+        <label>Invoice Date: <input id="searchInvoiceDate" type="date"></label>
+        <button id="searchByInvoiceDate">Search</button>
+      </div>
+      <button id="clearRecoveryBtn">Clear Recovery</button>
+      <div id="recoveryResults"></div>
+    </section>
   </section>
 
-  <!-- 2D → 3D Designer Section -->
   <section class="right-col">
     <h2>2D → 3D Designer</h2>
+
     <div class="uploader">
       <input id="upload2D" type="file" accept="image/*" multiple>
       <div class="hint">Select multiple images; each will appear below with a name and Generate 3D button.</div>
     </div>
+
     <div id="designList" class="design-list"></div>
+
+    <div id="progressContainer" class="progress-container" aria-hidden="true" style="display:none;">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+
     <div id="preview3D" class="preview-3d"></div>
     <div class="preview-note">Click "Generate 3D" for any design to preview and capture a snapshot (embedded into PDF).</div>
   </section>
