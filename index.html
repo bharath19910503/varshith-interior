@@ -84,6 +84,24 @@
       <input id="importJsonFile" type="file" accept=".json" style="display:none"/>
       <button id="importJsonBtn">Import Invoice (JSON)</button>
     </div>
+
+    <section class="invoice-recovery">
+      <h3>Recover Invoice</h3>
+      <div>
+        <label>Invoice Number: <input id="searchInvoiceNumber" placeholder="Enter Invoice Number"></label>
+        <button id="searchByInvoiceNumber">Search</button>
+      </div>
+      <div>
+        <label>Client Name: <input id="searchClientName" placeholder="Enter Client Name"></label>
+        <button id="searchByClientName">Search</button>
+      </div>
+      <div>
+        <label>Invoice Date: <input id="searchInvoiceDate" type="date"></label>
+        <button id="searchByInvoiceDate">Search</button>
+      </div>
+      <button id="clearRecoveryBtn">Clear Recovery</button>
+      <div id="recoveryResults"></div>
+    </section>
   </section>
 
   <section class="right-col">
@@ -104,24 +122,6 @@
     <div class="preview-note">Click "Generate 3D" for any design to preview and capture a snapshot (embedded into PDF).</div>
   </section>
 </main>
-
-<section class="invoice-recovery">
-  <h2>Recover Invoice</h2>
-  <div>
-    <label>Invoice Number: <input id="searchInvoiceNumber" placeholder="Enter Invoice Number"></label>
-    <button id="searchByInvoiceNumber">Search</button>
-  </div>
-  <div>
-    <label>Client Name: <input id="searchClientName" placeholder="Enter Client Name"></label>
-    <button id="searchByClientName">Search</button>
-  </div>
-  <div>
-    <label>Invoice Date: <input id="searchInvoiceDate" type="date"></label>
-    <button id="searchByInvoiceDate">Search</button>
-  </div>
-  <button id="clearRecoveryBtn">Clear Recovery</button>
-  <div id="recoveryResults"></div>
-</section>
 
 <footer>
   <div>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
