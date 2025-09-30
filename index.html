@@ -1,100 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Varshith Interior Solutions - Invoice</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-  <!-- Three.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<meta charset="UTF-8">
+<title>Varshith Interior Solutions - Invoice</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- JS Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
 </head>
 <body>
-  <header>
-    <h1>Varshith Interior Solutions</h1>
-    <nav>
-      <ul>
-        <li><a href="#invoiceTab">Invoice</a></li>
-        <li><a href="#designerTab">2D → 3D Designer</a></li>
-        <li><a href="#recoverTab">Recover Invoice</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <main>
-    <!-- Invoice Tab -->
-    <section id="invoiceTab">
-      <h2>Invoice</h2>
-      <div class="form-section">
-        <label>Upload Logo: <input type="file" id="logoUpload" accept="image/*"></label>
-        <img id="logoImg" class="logo-preview">
-        <label>Client Name: <input type="text" id="clientName"></label>
-        <label>Client GST: <input type="text" id="clientGST"></label>
-        <label>Invoice Number: <input type="text" id="invoiceNumber"></label>
-        <label>Date: <input type="date" id="invoiceDate"></label>
-        <label>Company GST: <input type="text" id="companyGST"></label>
-      </div>
+<header>
+  <h1>Varshith Interior Solutions</h1>
+</header>
 
-      <div class="table-wrap">
-        <table id="invoiceTable" class="invoice-table">
-          <thead>
-            <tr>
-              <th>Item</th><th>Material Used</th><th>Qty</th>
-              <th>Unit Price</th><th>Amount</th><th>Action</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="actions">
-        <button id="addRowBtn" class="primary">Add Item</button>
-        <button id="clearRowsBtn">Clear All</button>
-      </div>
+<main>
+  <!-- Invoice Tab -->
+  <section id="invoiceTab">
+    <h2>Invoice</h2>
+    <div class="form-section">
+      <label>Upload Logo: <input type="file" id="logoUpload" accept="image/*"></label>
+      <img id="logoImg" class="logo-preview">
+      <label>Client Name: <input type="text" id="clientName"></label>
+      <label>Client GST: <input type="text" id="clientGST"></label>
+      <label>Invoice Number: <input type="text" id="invoiceNumber"></label>
+      <label>Date: <input type="date" id="invoiceDate"></label>
+      <label>Company GST: <input type="text" id="companyGST"></label>
+    </div>
 
-      <div class="summary">
-        <label>GST %: <input type="number" id="gstPercent" value="18"></label>
-        <p>Total Cost: <span id="totalCost">0.00</span></p>
-        <p>GST Amount: <span id="gstAmount">0.00</span></p>
-        <p>Final Cost: <span id="finalCost">0.00</span></p>
-        <p>Amount in Words: <span id="amountWords"></span></p>
-      </div>
+    <div class="table-wrap">
+      <table id="invoiceTable">
+        <thead>
+          <tr>
+            <th>Item</th><th>Material Used</th><th>Qty</th>
+            <th>Unit Price</th><th>Amount</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-      <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
-    </section>
+    <div class="actions">
+      <button id="addRowBtn">Add Item</button>
+      <button id="clearRowsBtn">Clear All</button>
+      <button id="generatePDFBtn">Download Invoice PDF</button>
+    </div>
 
-    <!-- Designer Tab -->
-    <section id="designerTab">
-      <h2>2D → 3D Designer</h2>
-      <input type="file" id="upload2D" multiple accept="image/*">
-      <div id="designList" class="design-list"></div>
-      <div id="preview3D" class="preview-3d"></div>
-    </section>
+    <div class="totals">
+      <label>GST %: <input type="number" id="gstPercent" value="18"></label>
+      <p>Total Cost: <span id="totalCost">0.00</span></p>
+      <p>GST Amount: <span id="gstAmount">0.00</span></p>
+      <p>Final Cost: <span id="finalCost">0.00</span></p>
+      <p>Amount in Words: <span id="amountWords"></span></p>
+    </div>
+  </section>
 
-    <!-- Recover Tab -->
-    <section id="recoverTab">
-      <h2>Recover Invoice</h2>
-      <div class="invoice-recovery">
-        <label>Invoice Number: <input type="text" id="searchInvoiceNumber"></label>
-        <button id="searchByInvoiceNumber">Search</button>
-        <br>
-        <label>Client Name: <input type="text" id="searchClientName"></label>
-        <button id="searchByClientName">Search</button>
-        <br>
-        <label>Date: <input type="date" id="searchInvoiceDate"></label>
-        <button id="searchByInvoiceDate">Search</button>
-        <br>
-        <button id="clearRecoveryBtn">Clear All</button>
-      </div>
-      <div id="recoveryResults"></div>
-    </section>
-  </main>
+  <!-- Designer Tab -->
+  <section id="designerTab">
+    <h2>2D → 3D Designer</h2>
+    <input type="file" id="upload2D" multiple accept="image/*">
+    <div id="designList"></div>
+    <div id="preview3D"></div>
+  </section>
 
-  <footer>
-    <p>© 2025 Varshith Interior Solutions. All rights reserved.</p>
-  </footer>
+  <!-- Recover Tab -->
+  <section id="recoverTab">
+    <h2>Recover Invoice</h2>
+    <div class="invoice-recovery">
+      <label>Invoice Number: <input type="text" id="searchInvoiceNumber"></label>
+      <button id="searchByInvoiceNumber">Search</button>
+      <label>Client Name: <input type="text" id="searchClientName"></label>
+      <button id="searchByClientName">Search</button>
+      <label>Date: <input type="date" id="searchInvoiceDate"></label>
+      <button id="searchByInvoiceDate">Search</button>
+      <button id="clearRecoveryBtn">Clear All</button>
+    </div>
+    <div id="recoveryResults"></div>
+  </section>
+</main>
 
-  <script src="script.js"></script>
+<footer>
+  <p>© 2025 Varshith Interior Solutions. All rights reserved.</p>
+  <p>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</p>
+  <p>Phone: +91 9916511599 & +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
