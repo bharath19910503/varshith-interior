@@ -10,7 +10,7 @@ header img{width:72px;height:72px;object-fit:contain;background:#fff;padding:4px
 header .logo-upload input{display:none}
 header h1{margin:0;font-size:20px}
 header .company-sub{font-size:12px;opacity:.95;margin-top:4px}
-main{display:flex;gap:20px;padding:18px;flex-wrap:wrap}
+main{display:flex;gap:20px;padding:18px}
 .left-col{flex:1;min-width:380px}
 .right-col{width:520px;max-width:48%}
 .invoice-meta{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
@@ -23,12 +23,19 @@ main{display:flex;gap:20px;padding:18px;flex-wrap:wrap}
 .invoice-table th{background:var(--green);color:#fff;white-space:nowrap}
 .invoice-table td input{width:100%;border:0;padding:4px;outline:none}
 .invoice-table td .deleteBtn{background:#c62828;color:#fff;border:none;padding:6px 8px;border-radius:4px;cursor:pointer}
+.invoice-table th:nth-child(1){width:20%}
+.invoice-table th:nth-child(2){width:25%}
+.invoice-table th:nth-child(3){width:10%}
+.invoice-table th:nth-child(4){width:15%}
+.invoice-table th:nth-child(5){width:15%}
 .summary{margin-top:10px;display:flex;flex-direction:column;gap:8px}
 .summary div{background:#fff;padding:8px;border-radius:6px;border:1px solid #eee;min-width:150px}
 .summary .final{font-weight:700}
 #amountWords{font-style:italic;color:#555}
 .actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
 .actions .primary{background:#1565c0}
+.progress-container{width:100%;height:14px;background:#e6e6e6;border-radius:8px;overflow:hidden;margin-top:8px}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--green),#66bb6a)}
 .preview-3d{width:100%;height:380px;background:#f0f0f0;border-radius:6px;border:1px solid #ddd;margin-top:10px}
 .preview-note{font-size:12px;color:#555;margin-top:6px}
 .design-list{margin-top:10px;display:flex;flex-direction:column;gap:8px}
@@ -38,6 +45,7 @@ main{display:flex;gap:20px;padding:18px;flex-wrap:wrap}
 .design-controls{display:flex;gap:6px;align-items:center}
 .design-controls button{background:var(--green);color:#fff;border:none;padding:6px 8px;border-radius:4px;cursor:pointer}
 footer{background:var(--green);color:#fff;padding:10px 18px;text-align:center;margin-top:18px}
-.invoice-recovery{background:#fff;border-radius:6px;padding:10px;margin-top:10px; border:1px solid #ccc;}
+.btn{display:inline-block}
+.invoice-recovery{background:#fff;border-radius:6px;padding:10px;margin-top:10px;border:1px solid #ccc;}
 .invoice-recovery input{padding:6px;border:1px solid #ccc;border-radius:4px;margin-right:6px}
-.invoice-recovery button{padding:6px 10px;border:none;border-radius:4px;background:var(--green);color:#fff;cursor:pointer;margin-right:6px}
+.invoice-recovery button{padding:6px 10px;border:none;border-radius:4px;background:#2e7d32;color:#fff;cursor:pointer;margin-right:6px}
