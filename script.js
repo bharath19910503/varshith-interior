@@ -57,7 +57,7 @@ function recalcInvoice(){
 }
 
 // Clear All
-document.getElementById("clearRowsBtn").addEventListener("click", ()=>{ 
+document.getElementById("clearRowsBtn").addEventListener("click", ()=>{
     document.getElementById("clientName").value='';
     document.getElementById("invoiceNumber").value='';
     document.getElementById("invoiceDate").value='';
@@ -166,7 +166,6 @@ function displayRecoveryResults(results){
 document.getElementById("generatePDFBtn").addEventListener("click", ()=>{
     const {jsPDF}=window.jspdf;
     const doc=new jsPDF('p','pt','a4');
-
     const clientName=document.getElementById("clientName").value;
     const invoiceNumber=document.getElementById("invoiceNumber").value;
     const invoiceDate=document.getElementById("invoiceDate").value;
@@ -177,38 +176,57 @@ document.getElementById("generatePDFBtn").addEventListener("click", ()=>{
     if(!invoiceNumber){alert("Invoice Number required"); return;}
     if(!invoiceData[invoiceNumber]) invoiceData[invoiceNumber]={};
 
-    // Logo
-    if(logoImg.src) doc.addImage(logoImg.src,'PNG',40,20,60,60);
+    // --- HEADER ---
+    doc.setFillColor(46,125,50);
+    doc.rect(0,0,595,60,'F');
+    if(logoImg.src) doc.addImage(logoImg.src,'PNG',40,10,60,40);
+    doc.setFontSize(16); doc.setTextColor(255,255,255);
+    doc.text("Varshith Interior Solutions", 120, 35);
+    doc.setFontSize(10); doc.setTextColor(0,0,0);
+    doc.text(`Client: ${clientName}`, 40, 80);
+    doc.text(`Client GST: ${clientGST}`, 40, 95);
+    doc.text(`Invoice No: ${invoiceNumber}`, 400, 80);
+    doc.text(`Date: ${invoiceDate}`, 400, 95);
 
-    // Header
-    doc.setFontSize(16); doc.text("Varshith Interior Solutions", 120, 40);
-    doc.setFontSize(10); doc.text(`Client: ${clientName}`, 40, 100);
-    doc.text(`Client GST: ${clientGST}`, 40, 115);
-    doc.text(`Invoice No: ${invoiceNumber}`, 400, 100);
-    doc.text(`Date: ${invoiceDate}`, 400, 115);
-
-    // Table
+    // --- TABLE ---
     const headers=["Item","Material","Qty","Unit Price","Amount"];
     const rows=[];
     invoiceTableBody.querySelectorAll("tr").forEach(tr=>{
         const row=[]; tr.querySelectorAll("input").forEach(inp=>row.push(inp.value));
         row.push(tr.children[4].textContent); rows.push(row);
     });
-    doc.autoTable({startY:130,head:[headers],body:rows,theme:'grid'});
+    doc.autoTable({startY:110,head:[headers],body:rows,theme:'grid'});
 
-    const finalY=doc.lastAutoTable.finalY+20;
+    // --- SUMMARY ---
+    let finalY=doc.lastAutoTable.finalY + 20;
     doc.text(`Total Cost: ${document.getElementById("totalCost").textContent}`,40,finalY);
     doc.text(`GST Amount: ${document.getElementById("gstAmount").textContent}`,40,finalY+15);
     doc.text(`Final Cost: ${document.getElementById("finalCost").textContent}`,40,finalY+30);
     doc.text(`Amount in Words: ${document.getElementById("amountWords").textContent}`,40,finalY+45);
     doc.text("Payment Note: 50% advance, 30% after 50% work, 20% after completion",40,finalY+60);
 
-    // 3D Design (first one)
-    const first3D=designList.querySelector("img");
-    if(first3D) doc.addImage(first3D.src,'PNG',40,finalY+80,200,100);
+    // --- 3D Designs ---
+    const designImages = designList.querySelectorAll("img");
+    let imgY = finalY + 80;
+    const maxImgWidth = 180;
+    const maxImgHeight = 100;
+    designImages.forEach((img)=>{
+        if(imgY + maxImgHeight > 750){
+            doc.addPage(); imgY=40;
+        }
+        doc.addImage(img.src,'PNG',40,imgY,maxImgWidth,maxImgHeight);
+        imgY += maxImgHeight + 10;
+    });
 
-    // Footer
-    doc.setFontSize(10); doc.text(`Company GST: ${companyGST}`,40,770);
+    // --- FOOTER ---
+    doc.setFillColor(46,125,50);
+    doc.rect(0,770,595,50,'F');
+    doc.setFontSize(10); doc.setTextColor(255,255,255);
+    doc.text(`Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106`,40,785);
+    doc.text(`Phone: +91 9916511599 & +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com`,40,800);
+    doc.text(`Company GST: ${companyGST}`,40,815);
+
+    // Save PDF
     doc.save(`Invoice_${invoiceNumber}.pdf`);
 
     // Save to localStorage
